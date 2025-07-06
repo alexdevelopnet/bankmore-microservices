@@ -5,16 +5,14 @@ namespace BankMore.Auth.Domain.Entities
     public class Usuario
     {
         public Guid Id { get; private set; }
-        public string Nome { get; private set; }
-        public CPF Cpf { get; private set; }
-        public string Email { get; private set; }
-        public string SenhaHash { get; private set; }
+        public string Nome { get; private set; } = string.Empty;  
+        public CPF Cpf { get; private set; } = default!;
+        public Email Email { get; private set; } = default!;
+        public string SenhaHash { get; private set; } = string.Empty;
         public bool Ativo { get; private set; }
         public DateTime CriadoEm { get; private set; }
 
-        private Usuario() { }
-
-        private Usuario(Guid id, string nome, CPF cpf, string email, string senhaHash)
+        public Usuario(Guid id, string nome, CPF cpf, Email email, string senhaHash)
         {
             Id = id;
             Nome = nome;
@@ -25,7 +23,7 @@ namespace BankMore.Auth.Domain.Entities
             CriadoEm = DateTime.UtcNow;
         }
 
-        public static Usuario Criar(string nome, CPF cpf, string email, string senhaHash)
+        public static Usuario Criar(string nome, CPF cpf, Email email, string senhaHash)
         {
             if (string.IsNullOrWhiteSpace(nome))
                 throw new ArgumentException("Nome é obrigatório");

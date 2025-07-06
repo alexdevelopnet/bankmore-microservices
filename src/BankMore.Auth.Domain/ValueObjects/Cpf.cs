@@ -92,5 +92,13 @@ namespace BankMore.Auth.Domain.ValueObjects
             return cpf.EndsWith(digito);
         }
 
+    public static bool Validar(string cpf)
+    {
+        if (string.IsNullOrWhiteSpace(cpf))
+            return false;
+
+        var cpfLimpo = Limpar(cpf);
+        return EhValido(cpfLimpo);
     }
+  }
 }

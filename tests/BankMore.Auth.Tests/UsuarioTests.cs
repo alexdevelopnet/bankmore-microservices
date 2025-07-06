@@ -16,7 +16,7 @@ namespace BankMore.Auth.Tests.Domain
             var senhaHash = "HASH_SEGURA";
 
             // Act
-            var usuario = Usuario.Criar(nome, cpf, email, senhaHash);
+            var usuario = Usuario.Criar(nome, cpf, (Email)email, senhaHash);
 
             // Assert
             usuario.Should().NotBeNull();
@@ -35,7 +35,7 @@ namespace BankMore.Auth.Tests.Domain
         {
             var cpf = new CPF("111.444.777-35");
 
-            Action act = () => Usuario.Criar(nomeInvalido, cpf, "email@dominio.com", "senha");
+            Action act = () => Usuario.Criar(nomeInvalido, cpf, (Email)"email@dominio.com", "senha");
 
             act.Should().Throw<ArgumentException>()
                 .WithMessage("Nome é obrigatório");
@@ -48,7 +48,7 @@ namespace BankMore.Auth.Tests.Domain
         {
             var cpf = new CPF("111.444.777-35");
 
-            Action act = () => Usuario.Criar("Nome", cpf, emailInvalido, "senha");
+            Action act = () => Usuario.Criar("Nome", cpf, (Email)emailInvalido, "senha");
 
             act.Should().Throw<ArgumentException>()
                 .WithMessage("Email é obrigatório");
@@ -61,7 +61,7 @@ namespace BankMore.Auth.Tests.Domain
         {
             var cpf = new CPF("111.444.777-35");
 
-            Action act = () => Usuario.Criar("Nome", cpf, "email@dominio.com", senhaInvalida);
+            Action act = () => Usuario.Criar("Nome", cpf, (Email)"email@dominio.com", senhaInvalida);
 
             act.Should().Throw<ArgumentException>()
                 .WithMessage("Senha é obrigatória");

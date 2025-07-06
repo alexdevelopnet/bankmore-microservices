@@ -1,18 +1,68 @@
-﻿namespace BankMore.Auth.Domain.ValueObjects
+﻿using System.Text.RegularExpressions;
+
+namespace BankMore.Auth.Domain.ValueObjects
 {
-    public class CPF
+    public class CPF : IEquatable<CPF>
     {
         public string Numero { get; private set; }
         public CPF(string numero)
         {
             if (string.IsNullOrWhiteSpace(numero))
-                throw new ArgumentException("CPF é obrigatório", nameof(numero));
+                throw new ArgumentException("CPF não pode ser vazio.");
 
-            numero = new string(numero.Where(char.IsDigit).ToArray());
-            if (numero.Length !=11 ||  !ValidarCpf(numero))
-                throw new ArgumentException("CPF inválido", nameof(numero));
-            Numero = numero;
+            var cpfLimpo = Limpar(numero);
+
+            if (!EhValido(cpfLimpo))
+                throw new ArgumentException("CPF inválido.");
+
+            Numero = cpfLimpo;
         }
+        public string Formatado =>
+        Convert.ToUInt64(Numero).ToString(@"000\.000\.000\-00");
+
+        private static string Limpar(string cpf)
+        {
+            return Regex.Replace(cpf, "[^0-9]", "");
+        }
+        private static bool EhValido(string cpf)
+        {
+            if (cpf.Length != 11 || cpf.Distinct().Count() == 1)
+                return false;
+
+            int[] multiplicador1 = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+            int[] multiplicador2 = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+
+            var tempCpf = cpf.Substring(0, 9);
+            var soma = 0;
+
+            for (int i = 0; i < 9; i++)
+                soma += int.Parse(tempCpf[i].ToString()) * multiplicador1[i];
+
+            var resto = soma % 11;
+            var digito1 = resto < 2 ? 0 : 11 - resto;
+
+            tempCpf += digito1;
+            soma = 0;
+
+            for (int i = 0; i < 10; i++)
+                soma += int.Parse(tempCpf[i].ToString()) * multiplicador2[i];
+
+            resto = soma % 11;
+            var digito2 = resto < 2 ? 0 : 11 - resto;
+
+            var cpfCalculado = tempCpf + digito2;
+
+            return cpf == cpfCalculado;
+        }
+
+        public override string ToString() => Formatado;
+
+        public override bool Equals(object? obj) => Equals(obj as CPF);
+
+        public bool Equals(CPF? other) =>
+            other is not null && Numero == other.Numero;
+
+        public override int GetHashCode() => Numero.GetHashCode();
         private bool ValidarCpf(string cpf)
         {
             if (cpf.Distinct().Count() == 1)
@@ -41,13 +91,6 @@
 
             return cpf.EndsWith(digito);
         }
-        public override bool Equals(object? obj)
-        {
-            return obj is CPF other && Numero == other.Numero;
-        }
 
-        public override int GetHashCode() => Numero.GetHashCode();
-
-        public override string ToString() => Numero;
     }
 }

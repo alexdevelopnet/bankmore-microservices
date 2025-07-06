@@ -2,39 +2,43 @@
 
 namespace BankMore.Auth.Domain.Entities
 {
-    internal class Usuario
+    public class Usuario
     {
         public Guid Id { get; private set; }
-        public CPF Cpf { get; private set; }
         public string Nome { get; private set; }
+        public CPF Cpf { get; private set; }
+        public string Email { get; private set; }
         public string SenhaHash { get; private set; }
-        public DateTime DataCriacao { get; private set; }
         public bool Ativo { get; private set; }
+        public DateTime CriadoEm { get; private set; }
 
-        public Usuario()
+        private Usuario() { }
+
+        private Usuario(Guid id, string nome, CPF cpf, string email, string senhaHash)
         {
-            
-        }
-        public Usuario(string nome, CPF cpf, string senhaHash)
-        {
-            Id = Guid.NewGuid();
-            Nome = nome ?? throw new ArgumentNullException(nameof(nome));
-            Cpf = cpf ?? throw new ArgumentNullException(nameof(cpf));
-            SenhaHash = senhaHash ?? throw new ArgumentNullException(nameof(senhaHash));
+            Id = id;
+            Nome = nome;
+            Cpf = cpf;
+            Email = email;
+            SenhaHash = senhaHash;
             Ativo = true;
-            DataCriacao = DateTime.UtcNow;
-        }
-        public static Usuario Criar(string nome, string cpf, string senhaHash)
-        {
-            return new Usuario(nome, new CPF(cpf), senhaHash);
+            CriadoEm = DateTime.UtcNow;
         }
 
-        public void Inativar()
+        public static Usuario Criar(string nome, CPF cpf, string email, string senhaHash)
         {
-            if (!Ativo)
-                throw new InvalidOperationException("Usuário já está inativo.");
+            if (string.IsNullOrWhiteSpace(nome))
+                throw new ArgumentException("Nome é obrigatório");
 
-            Ativo = false;
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Email é obrigatório");
+
+            if (string.IsNullOrWhiteSpace(senhaHash))
+                throw new ArgumentException("Senha é obrigatória");
+
+            return new Usuario(Guid.NewGuid(), nome, cpf, email, senhaHash);
         }
+
+        public void Inativar() => Ativo = false;
     }
 }

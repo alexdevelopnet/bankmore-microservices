@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankMore.Auth.Infrastructur
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankMore.Auth.Tests", "tests\BankMore.Auth.Tests\BankMore.Auth.Tests.csproj", "{1A9D684F-1B77-4F26-8B70-88AF0517DEC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankMore.Auth.Tests.Domain", "tests\BankMore.Auth.Tests\BankMore.Auth.Tests.Domain.csproj", "{1A9D684F-1B77-4F26-8B70-88AF0517DEC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,5 +97,8 @@ Global
 		{124363EF-82AB-4D53-BAA0-D88B1179EA2B} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{65BE3B47-63ED-46ED-98D1-773EDF60FE95} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{1A9D684F-1B77-4F26-8B70-88AF0517DEC0} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {174F2270-7736-4F91-82F6-AA6AA802296F}
 	EndGlobalSection
 EndGlobal

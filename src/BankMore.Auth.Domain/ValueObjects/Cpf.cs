@@ -1,10 +1,13 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace BankMore.Auth.Domain.ValueObjects
 {
     public class CPF : IEquatable<CPF>
     {
         public string Numero { get; private set; }
+
         public CPF(string numero)
         {
             if (string.IsNullOrWhiteSpace(numero))
@@ -17,13 +20,14 @@ namespace BankMore.Auth.Domain.ValueObjects
 
             Numero = cpfLimpo;
         }
-        public string Formatado =>
-        Convert.ToUInt64(Numero).ToString(@"000\.000\.000\-00");
+
+        public string Formatado => Convert.ToUInt64(Numero).ToString(@"000\.000\.000\-00");
 
         private static string Limpar(string cpf)
         {
             return Regex.Replace(cpf, "[^0-9]", "");
         }
+
         private static bool EhValido(string cpf)
         {
             if (cpf.Length != 11 || cpf.Distinct().Count() == 1)
@@ -32,14 +36,14 @@ namespace BankMore.Auth.Domain.ValueObjects
             int[] multiplicador1 = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
             int[] multiplicador2 = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
 
-            var tempCpf = cpf.Substring(0, 9);
-            var soma = 0;
+            string tempCpf = cpf.Substring(0, 9);
+            int soma = 0;
 
             for (int i = 0; i < 9; i++)
                 soma += int.Parse(tempCpf[i].ToString()) * multiplicador1[i];
 
-            var resto = soma % 11;
-            var digito1 = resto < 2 ? 0 : 11 - resto;
+            int resto = soma % 11;
+            int digito1 = resto < 2 ? 0 : 11 - resto;
 
             tempCpf += digito1;
             soma = 0;
@@ -48,9 +52,9 @@ namespace BankMore.Auth.Domain.ValueObjects
                 soma += int.Parse(tempCpf[i].ToString()) * multiplicador2[i];
 
             resto = soma % 11;
-            var digito2 = resto < 2 ? 0 : 11 - resto;
+            int digito2 = resto < 2 ? 0 : 11 - resto;
 
-            var cpfCalculado = tempCpf + digito2;
+            string cpfCalculado = tempCpf + digito2;
 
             return cpf == cpfCalculado;
         }
@@ -63,42 +67,15 @@ namespace BankMore.Auth.Domain.ValueObjects
             other is not null && Numero == other.Numero;
 
         public override int GetHashCode() => Numero.GetHashCode();
-        private bool ValidarCpf(string cpf)
+
+        // Método estático público para validar CPF (use no handler)
+        public static bool ValidarFormato(string cpf)
         {
-            if (cpf.Distinct().Count() == 1)
+            if (string.IsNullOrWhiteSpace(cpf))
                 return false;
 
-            int[] multiplicador1 = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
-            int[] multiplicador2 = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
-
-            string tempCpf = cpf[..9];
-            int soma = tempCpf
-                .Select((t, i) => int.Parse(t.ToString()) * multiplicador1[i])
-                .Sum();
-
-            int resto = soma % 11;
-            resto = resto < 2 ? 0 : 11 - resto;
-            string digito = resto.ToString();
-
-            tempCpf += digito;
-            soma = tempCpf
-                .Select((t, i) => int.Parse(t.ToString()) * multiplicador2[i])
-                .Sum();
-
-            resto = soma % 11;
-            resto = resto < 2 ? 0 : 11 - resto;
-            digito += resto;
-
-            return cpf.EndsWith(digito);
+            var cpfLimpo = Limpar(cpf);
+            return EhValido(cpfLimpo);
         }
-
-    public static bool Validar(string cpf)
-    {
-        if (string.IsNullOrWhiteSpace(cpf))
-            return false;
-
-        var cpfLimpo = Limpar(cpf);
-        return EhValido(cpfLimpo);
     }
-  }
 }

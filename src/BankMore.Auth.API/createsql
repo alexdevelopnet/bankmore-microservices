@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS Usuarios (
+    Id TEXT PRIMARY KEY,
+    Nome TEXT NOT NULL,
+    Cpf TEXT NOT NULL,
+    Email TEXT NOT NULL,
+    Senha TEXT NOT NULL
+);

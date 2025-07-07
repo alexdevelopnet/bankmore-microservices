@@ -1,23 +1,19 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+﻿# Etapa de build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /app
 
-COPY src/BankMore.Auth.API/BankMore.Auth.API.csproj ./BankMore.Auth.API/
-COPY src/BankMore.Auth.Application/BankMore.Auth.Application.csproj ./BankMore.Auth.Application/
-COPY src/BankMore.Auth.Domain/BankMore.Auth.Domain.csproj ./BankMore.Auth.Domain/
-COPY src/BankMore.Auth.Infrastructure/BankMore.Auth.Infrastructure.csproj ./BankMore.Auth.Infrastructure/
+COPY . .
+RUN dotnet restore
+RUN dotnet publish -c Release -o out
 
-RUN dotnet restore ./BankMore.Auth.API/BankMore.Auth.API.csproj
-
-COPY src/. .
-
-WORKDIR /src/BankMore.Auth.API
-RUN dotnet publish -c Release -o /app/publish
-
+# Etapa de runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
-# 👇 Adicione esta linha
-ENV ASPNETCORE_URLS=http://+:80
+COPY --from=build /app/out .
 
-COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "BankMore.Auth.API.dll"]
+# Define que está rodando em container e em ambiente Development
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+ENV ASPNETCORE_ENVIRONMENT=Development
+
+ENTRYPOINT ["dotnet", "BankMore.Auth.Api.dll"]

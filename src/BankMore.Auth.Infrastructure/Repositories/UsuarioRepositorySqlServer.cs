@@ -1,4 +1,4 @@
-using BankMore.Auth.Domain.Entities;
+﻿using BankMore.Auth.Domain.Entities;
 using BankMore.Auth.Domain.Repositories;
 using BankMore.Auth.Infrastructure.Mappers;
 using Dapper;
@@ -6,11 +6,11 @@ using System.Data;
 
 namespace BankMore.Auth.Infrastructure.Repositories
 {
-    public class UsuarioRepository : IUsuarioRepository
+    public class UsuarioRepositorySqlServer : IUsuarioRepository
     {
         private readonly IDbConnection _connection;
 
-        public UsuarioRepository(IDbConnection connection)
+        public UsuarioRepositorySqlServer(IDbConnection connection)
         {
             _connection = connection;
         }

@@ -8,7 +8,7 @@ using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Carrega configurações em ordem
+// Carregar configurações
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false)
@@ -16,30 +16,32 @@ builder.Configuration
     .AddJsonFile("appsettings.Docker.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
-// Detecta ambiente Docker para escolha do DB
+// Detectar se está rodando no Docker
 var isDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
-// Registra o IDbConnectionFactory (implementação pode usar isDocker para decidir)
+// Registrar fábrica de conexões
 builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
 
-// Registra o IDbConnection baseado na factory
+// Registrar IDbConnection
 builder.Services.AddScoped<IDbConnection>(sp =>
 {
     var factory = sp.GetRequiredService<IDbConnectionFactory>();
     return factory.CreateConnection();
 });
 
-// Registra o repositório correto baseado no ambiente
+// Injeção condicional de repositórios
 if (isDocker)
 {
     builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryMySql>();
+    builder.Services.AddScoped<IContaCorrenteRepository, ContaCorrenteRepositoryMySql>();
 }
 else
 {
     builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositorySqlServer>();
+    builder.Services.AddScoped<IContaCorrenteRepository, ContaCorrenteRepositorySqlServer>();
 }
 
-// Adiciona MediatR
+// MediatR
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CriarUsuarioCommand).Assembly));
 
@@ -47,20 +49,18 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// URL amigável lowercase
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
-// Middleware Swagger só em Development
+// Swagger somente em desenvolvimento
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Middleware para tratar exceções com JSON padronizado
+// Middleware de erro global
 app.UseExceptionHandler(exceptionApp =>
 {
     exceptionApp.Run(async context =>
@@ -78,7 +78,5 @@ app.UseExceptionHandler(exceptionApp =>
 });
 
 app.UseHttpsRedirection();
-
 app.MapControllers();
-
 app.Run();

@@ -1,21 +1,19 @@
-using BankMore.Auth.Domain.Entities;
-using BankMore.Auth.Domain.Repositories;
-using BankMore.Auth.Infrastructure.Mappers;
+﻿using BankMore.Auth.Domain.Repositories;
 using Dapper;
 using System.Data;
 
 namespace BankMore.Auth.Infrastructure.Repositories
 {
-    public class UsuarioRepositoryMySql : IUsuarioRepository
+    public class ContaCorrenteRepositoryMySql : IContaCorrenteRepository
     {
         private readonly IDbConnection _connection;
 
-        public UsuarioRepositoryMySql(IDbConnection connection)
+        public ContaCorrenteRepositoryMySql(IDbConnection connection)
         {
             _connection = connection;
         }
 
-        public async Task AdicionarAsync(ContaCorrente conta)
+        public async Task AdicionarAsync(Domain.Entities.ContaCorrente conta)
         {
             var sql = @"INSERT INTO contacorrente 
                         (idcontacorrente, numero, nome, ativo, senha, salt)
@@ -39,16 +37,16 @@ namespace BankMore.Auth.Infrastructure.Repositories
             return count > 0;
         }
 
-        public async Task<ContaCorrente?> ObterPorIdAsync(Guid id)
+        public async Task<Domain.Entities.ContaCorrente?> ObterPorIdAsync(Guid id)
         {
             var sql = @"SELECT * FROM contacorrente WHERE idcontacorrente = @Id";
-            return await _connection.QueryFirstOrDefaultAsync<ContaCorrente>(sql, new { Id = id });
+            return await _connection.QueryFirstOrDefaultAsync<Domain.Entities.ContaCorrente>(sql, new { Id = id });
         }
 
-        public async Task<ContaCorrente?> ObterPorNumeroAsync(int numero)
+        public async Task<Domain.Entities.ContaCorrente?> ObterPorNumeroAsync(int numero)
         {
             var sql = @"SELECT * FROM contacorrente WHERE numero = @Numero";
-            return await _connection.QueryFirstOrDefaultAsync<ContaCorrente>(sql, new { Numero = numero });
+            return await _connection.QueryFirstOrDefaultAsync<Domain.Entities.ContaCorrente>(sql, new { Numero = numero });
         }
 
         public async Task AtualizarSaldoAsync(Guid idContaCorrente, decimal novoSaldo)
@@ -58,36 +56,13 @@ namespace BankMore.Auth.Infrastructure.Repositories
             await _connection.ExecuteAsync(sql, new { Id = idContaCorrente, Saldo = novoSaldo });
         }
 
-        public async Task<bool> ContaAtivaAsync(Guid idContaCorrente)
+        public async Task<bool> ContaEstaAtivaAsync(Guid idContaCorrente)
         {
             var sql = @"SELECT ativo FROM contacorrente WHERE idcontacorrente = @Id";
             var ativo = await _connection.ExecuteScalarAsync<int?>(sql, new { Id = idContaCorrente });
             return ativo == 1;
         }
 
-        public Task<Usuario?> ObterPorCpfAsync(string cpf)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Usuario?> ObterPorEmailAsync(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Usuario?> IUsuarioRepository.ObterPorIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AdicionarAsync(Usuario usuario)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AtualizarAsync(Usuario usuario)
-        {
-            throw new NotImplementedException();
-        }
+         
     }
 }

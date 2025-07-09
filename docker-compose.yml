@@ -1,39 +1,60 @@
-version: '3.9'
+version: '3.8'
 
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: bankmore_mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: YourStrong!Pass123
+      MYSQL_ROOT_PASSWORD: MinhaSenha123
       MYSQL_DATABASE: bankmoredb
     ports:
       - "3306:3306"
     volumes:
-      - mysql-data:/var/lib/mysql
-      - ./sql:/docker-entrypoint-initdb.d
-    networks:
-      - bankmore-network
+      - mysql_data:/var/lib/mysql
 
-  bankmore-api:
-    container_name: bankmore-api
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: bankmore_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: bankmore_kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  bankmore.api:
     build:
       context: .
       dockerfile: Dockerfile
-    depends_on:
-      - mysql
+    container_name: bankmore_api
+    environment:
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - ConnectionStrings__MySql=server=mysql;port=3306;database=bankmoredb;user=root;password=MinhaSenha123;
+      - JwtSettings__SecretKey=minha-chave-super-secreta-para-bankmore-1234567890
+      - JwtSettings__Issuer=BankMore.Issuer
+      - JwtSettings__Audience=BankMore.Audience
+      - JwtSettings__ExpiresInMinutes=60
+      - Kafka__BootstrapServers=kafka:9092
     ports:
       - "5000:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - DOTNET_RUNNING_IN_CONTAINER=true
-    networks:
-      - bankmore-network
+    depends_on:
+      - mysql
+      - kafka
 
 volumes:
-  mysql-data:
-
-networks:
-  bankmore-network:
-    driver: bridge
+  mysql_data:

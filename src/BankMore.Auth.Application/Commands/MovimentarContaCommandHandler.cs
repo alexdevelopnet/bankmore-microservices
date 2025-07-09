@@ -2,7 +2,6 @@
 using BankMore.Auth.Domain.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace BankMore.Auth.Application.Commands
 {
@@ -32,7 +31,7 @@ namespace BankMore.Auth.Application.Commands
 
             var idempotenteExiste = await _movimentoRepo.ExisteIdempotenciaAsync(request.ChaveIdempotencia);
             if (idempotenteExiste)
-                return Unit.Value; // Requisição repetida, já registrada.
+                return Unit.Value;  
 
             var conta = request.NumeroConta.HasValue
                 ? await _contaRepo.ObterPorNumeroAsync(request.NumeroConta.Value)

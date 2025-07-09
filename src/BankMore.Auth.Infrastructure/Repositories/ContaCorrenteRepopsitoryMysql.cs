@@ -2,7 +2,6 @@
 using BankMore.Auth.Domain.Repositories;
 using Dapper;
 using System.Data;
-using System.Data.Common;
 
 namespace BankMore.Auth.Infrastructure.Repositories
 {

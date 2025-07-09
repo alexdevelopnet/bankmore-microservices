@@ -20,8 +20,7 @@ namespace BankMore.Auth.Domain.Entities
             Valor = valor;
             ChaveIdempotencia = chaveIdempotencia;
         }
-
-        // Opcional: construtor vazio para Dapper, EF etc.
+ 
         public Movimento() { }
     }
 }

@@ -11,7 +11,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Carregar configurações
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false)
@@ -19,20 +18,16 @@ builder.Configuration
     .AddJsonFile("appsettings.Docker.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
-// Detectar se está rodando no Docker
 var isDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
-// Registrar fábrica de conexões
 builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
 
-// Registrar IDbConnection
 builder.Services.AddScoped<IDbConnection>(sp =>
 {
     var factory = sp.GetRequiredService<IDbConnectionFactory>();
     return factory.CreateConnection();
 });
 
-// Injeção condicional de repositórios
 if (isDocker)
 {
     builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryMySql>();
@@ -50,22 +45,18 @@ else
     builder.Services.AddScoped<IIdempotenciaRepository, IdempotenciaRepositorySqlServer>();
 }
 
-// MediatR e HttpContextAccessor para pegar dados do usuário no contexto
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CriarUsuarioCommand).Assembly));
 builder.Services.AddHttpContextAccessor();
 
-// Controllers e Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
-// Configuração JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings.GetValue<string>("SecretKey");
 
-// Validação para garantir que a chave secreta não seja nula ou vazia
 if (string.IsNullOrEmpty(secretKey))
 {
     throw new Exception("JWT SecretKey não está configurada no appsettings.json");
@@ -83,7 +74,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-            ClockSkew = TimeSpan.Zero // importante para evitar delay na expiração do token
+            ClockSkew = TimeSpan.Zero  
         };
     });
 
@@ -115,7 +106,6 @@ app.UseExceptionHandler(exceptionApp =>
 
 app.UseHttpsRedirection();
 
-// Autenticação e autorização precisam vir nesta ordem
 app.UseAuthentication();
 app.UseAuthorization();
 

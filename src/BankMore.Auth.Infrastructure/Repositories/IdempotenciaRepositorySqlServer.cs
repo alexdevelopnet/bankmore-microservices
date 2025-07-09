@@ -27,7 +27,7 @@ namespace BankMore.Auth.Infrastructure.Repositories
             await _connection.ExecuteAsync(sql, new
             {
                 ChaveIdempotencia = chaveIdempotencia,
-                Requisicao = "", // opcional: serialize o request se quiser
+                Requisicao = "",  
                 Resultado = resultado
             });
         }

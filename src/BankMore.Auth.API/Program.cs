@@ -36,6 +36,7 @@ if (isDocker)
     builder.Services.AddScoped<IContaCorrenteRepository, ContaCorrenteRepositoryMySql>();
     builder.Services.AddScoped<IMovimentoRepository, MovimentoRepositoryMySql>();
     builder.Services.AddScoped<ITransferenciaRepository, TransferenciaRepositoryMySql>();
+    builder.Services.AddScoped<IIdempotenciaRepository, IdempotenciaRepositoryMySql>();
 }
 else
 {
@@ -43,6 +44,7 @@ else
     builder.Services.AddScoped<IContaCorrenteRepository, ContaCorrenteRepositorySqlServer>();
     builder.Services.AddScoped<IMovimentoRepository, MovimentoRepositorySqlServer>();
     builder.Services.AddScoped<ITransferenciaRepository, TransferenciaRepositorySqlServer>();
+    builder.Services.AddScoped<IIdempotenciaRepository, IdempotenciaRepositorySqlServer>();
 
 }
 

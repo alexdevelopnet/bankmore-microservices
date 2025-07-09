@@ -8,18 +8,23 @@ namespace BankMore.Auth.Application.Commands
     {
         private readonly IMovimentoRepository _movimentoRepo;
         private readonly ITransferenciaRepository _transferenciaRepo;
+        private readonly IIdempotenciaRepository _idempotenciaRepo;
 
-        public RealizarTransferenciaCommandHandler(IMovimentoRepository movimentoRepo, ITransferenciaRepository transferenciaRepo)
+        public RealizarTransferenciaCommandHandler(IMovimentoRepository movimentoRepo, ITransferenciaRepository transferenciaRepo, IIdempotenciaRepository idempotenciaRepo)
         {
             _movimentoRepo = movimentoRepo;
             _transferenciaRepo = transferenciaRepo;
+            _idempotenciaRepo = idempotenciaRepo;
         }
 
         public async Task<Guid> Handle(RealizarTransferenciaCommand request, CancellationToken cancellationToken)
         {
+            if (await _idempotenciaRepo.ExisteAsync(request.ChaveIdempotencia))
+            {
+                return Guid.Empty;
+            } 
             var data = DateTime.Now;
-
-            // Generate a unique idempotency key for each transaction
+             
             var chaveIdempotenciaDebito = Guid.NewGuid().ToString();
             var chaveIdempotenciaCredito = Guid.NewGuid().ToString();
 
@@ -31,6 +36,8 @@ namespace BankMore.Auth.Application.Commands
 
             var transferencia = new Transferencia(Guid.NewGuid(), request.IdContaOrigem, request.IdContaDestino, data, request.Valor);
             await _transferenciaRepo.AdicionarAsync(transferencia);
+
+            await _idempotenciaRepo.SalvarAsync(request.ChaveIdempotencia, transferencia.Id.ToString());
 
             return transferencia.Id;
         }

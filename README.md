@@ -1,4 +1,5 @@
-# 💰 BankMore - Sistema de Conta Corrente para Fintechs
+# 💰 BankMore - Sistema de Conta Corrente
+
 
 **BankMore** é um projeto backend baseado em microsserviços, construído com .NET 8 e arquitetura DDD + CQRS. Ele simula uma plataforma bancária moderna com foco em segurança, escalabilidade e boas práticas de engenharia de software.
 

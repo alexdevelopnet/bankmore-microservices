@@ -34,11 +34,14 @@ if (isDocker)
 {
     builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryMySql>();
     builder.Services.AddScoped<IContaCorrenteRepository, ContaCorrenteRepositoryMySql>();
+    builder.Services.AddScoped<IMovimentoRepository, MovimentoRepositoryMySql>();
 }
 else
 {
     builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositorySqlServer>();
     builder.Services.AddScoped<IContaCorrenteRepository, ContaCorrenteRepositorySqlServer>();
+    builder.Services.AddScoped<IMovimentoRepository, MovimentoRepositorySqlServer>();
+
 }
 
 // MediatR

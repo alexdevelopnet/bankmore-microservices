@@ -19,8 +19,12 @@ namespace BankMore.Auth.Application.Commands
         {
             var data = DateTime.Now;
 
-            var debito = new Movimento(Guid.NewGuid(), request.IdContaOrigem, data, 'D', request.Valor);
-            var credito = new Movimento(Guid.NewGuid(), request.IdContaDestino, data, 'C', request.Valor);
+            // Generate a unique idempotency key for each transaction
+            var chaveIdempotenciaDebito = Guid.NewGuid().ToString();
+            var chaveIdempotenciaCredito = Guid.NewGuid().ToString();
+
+            var debito = new Movimento(Guid.NewGuid(), request.IdContaOrigem, data, "D", request.Valor, chaveIdempotenciaDebito);
+            var credito = new Movimento(Guid.NewGuid(), request.IdContaDestino, data, "C", request.Valor, chaveIdempotenciaCredito);
 
             await _movimentoRepo.AdicionarAsync(debito);
             await _movimentoRepo.AdicionarAsync(credito);

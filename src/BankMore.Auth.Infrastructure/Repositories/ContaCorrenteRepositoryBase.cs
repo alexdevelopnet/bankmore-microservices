@@ -44,4 +44,9 @@ public class ContaCorrenteRepositoryBase : IContaCorrenteRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task AtualizarAsync(object conta)
+    {
+        throw new NotImplementedException();
+    }
 }

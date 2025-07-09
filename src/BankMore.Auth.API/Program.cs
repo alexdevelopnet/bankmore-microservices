@@ -50,6 +50,8 @@ else
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CriarUsuarioCommand).Assembly));
 
+builder.Services.AddHttpContextAccessor();
+
 // Controllers e Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

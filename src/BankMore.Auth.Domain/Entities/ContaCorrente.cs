@@ -21,6 +21,11 @@
             }
 
             public void Desativar() => Ativo = false;
+
+        public void Inativar()
+        {
+            Ativo = false;
         }
+    }
     }
  

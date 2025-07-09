@@ -21,5 +21,11 @@ namespace BankMore.Auth.Infrastructure.Repositories
 
             await _connection.ExecuteAsync(sql, movimento);
         }
+
+        public Task<bool> ExisteIdempotenciaAsync(string chaveIdempotencia)
+        {
+            var sql = "SELECT COUNT(1) FROM movimento WHERE chave_idempotencia = @ChaveIdempotencia;";
+            return _connection.ExecuteScalarAsync<bool>(sql, new { ChaveIdempotencia = chaveIdempotencia });
+        }
     }
 }

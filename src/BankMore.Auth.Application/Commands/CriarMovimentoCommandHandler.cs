@@ -18,12 +18,15 @@ namespace BankMore.Auth.Application.Commands
             if (request.Tipo != 'C' && request.Tipo != 'D')
                 throw new ArgumentException("Tipo de movimento inválido. Use 'C' (crédito) ou 'D' (débito).");
 
+            var chaveIdempotencia = Guid.NewGuid().ToString(); // Generate a unique idempotency key
+
             var movimento = new Movimento(
                 Guid.NewGuid(),
                 request.IdContaCorrente,
                 DateTime.Now,
-                request.Tipo,
-                request.Valor
+                request.Tipo.ToString(),
+                request.Valor,
+                chaveIdempotencia // Pass the required 'chaveIdempotencia' parameter
             );
 
             await _repository.AdicionarAsync(movimento);

@@ -66,3 +66,11 @@ Você tem permissão para usar, copiar, modificar, mesclar, publicar, distribuir
 
 **Aviso:** O software é fornecido "no estado em que se encontra", sem garantia de qualquer tipo, expressa ou implícita.
 
+
+## 🛣️ Roadmap
+
+- [ ] Criar testes unitários para movimentações
+- [ ] Implementar cobrança de tarifas com Kafka
+- [ ] Adicionar cache (Redis)
+- [ ] Melhorar logs e monitoramento
+- [ ] Criar painel de observabilidade (futuro)

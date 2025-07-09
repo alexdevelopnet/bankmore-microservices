@@ -39,4 +39,9 @@ public class ContaCorrenteRepositoryBase : IContaCorrenteRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task<decimal> ObterSaldoAsync(Guid idConta)
+    {
+        throw new NotImplementedException();
+    }
 }

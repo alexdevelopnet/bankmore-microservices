@@ -10,5 +10,6 @@ namespace BankMore.Auth.Domain.Repositories
         Task<ContaCorrente?> ObterPorNumeroAsync(int numero);
         Task AtualizarSaldoAsync(Guid idConta, decimal novoSaldo);
         Task<bool> ContaEstaAtivaAsync(Guid idConta);
+        Task<decimal> ObterSaldoAsync(Guid idConta);
     }
 }

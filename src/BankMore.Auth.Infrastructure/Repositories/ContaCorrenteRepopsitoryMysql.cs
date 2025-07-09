@@ -1,6 +1,7 @@
 ﻿using BankMore.Auth.Domain.Repositories;
 using Dapper;
 using System.Data;
+using System.Data.Common;
 
 namespace BankMore.Auth.Infrastructure.Repositories
 {
@@ -63,6 +64,19 @@ namespace BankMore.Auth.Infrastructure.Repositories
             return ativo == 1;
         }
 
-         
+        public async Task<decimal> ObterSaldoAsync(Guid idConta)
+        {
+            var sql = @"
+        SELECT 
+            COALESCE(SUM(CASE 
+                WHEN tipomovimento = 'C' THEN valor 
+                WHEN tipomovimento = 'D' THEN -valor 
+                ELSE 0 END), 0)
+        FROM movimento
+        WHERE idcontacorrente = @id";
+
+            return await _connection.ExecuteScalarAsync<decimal>(sql, new { id = idConta });
+        }
+
     }
 }

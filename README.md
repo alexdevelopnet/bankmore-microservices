@@ -57,3 +57,12 @@ Arquiteto e desenvolvedor especializado em .NET, sistemas distribuídos, mensage
 
 🔗 LinkedIn
 https://www.linkedin.com/in/alex-feitoza-6056a5237/
+
+## Licença
+
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+Você tem permissão para usar, copiar, modificar, mesclar, publicar, distribuir, sublicenciar e/ou vender cópias deste software, desde que mantenha o aviso de copyright e a permissão incluídos no software.
+
+**Aviso:** O software é fornecido "no estado em que se encontra", sem garantia de qualquer tipo, expressa ou implícita.
+

@@ -49,4 +49,9 @@ public class ContaCorrenteRepositoryBase : IContaCorrenteRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task<ContaCorrente?> ObterPorDocumentoOuNumeroAsync(string documentoOuNumero)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -48,23 +48,28 @@ else
     builder.Services.AddScoped<IMovimentoRepository, MovimentoRepositorySqlServer>();
     builder.Services.AddScoped<ITransferenciaRepository, TransferenciaRepositorySqlServer>();
     builder.Services.AddScoped<IIdempotenciaRepository, IdempotenciaRepositorySqlServer>();
-
 }
 
-// MediatR
+// MediatR e HttpContextAccessor para pegar dados do usuário no contexto
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CriarUsuarioCommand).Assembly));
-
 builder.Services.AddHttpContextAccessor();
- 
+
 // Controllers e Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
- 
+
+// Configuração JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings.GetValue<string>("SecretKey");
+
+// Validação para garantir que a chave secreta não seja nula ou vazia
+if (string.IsNullOrEmpty(secretKey))
+{
+    throw new Exception("JWT SecretKey não está configurada no appsettings.json");
+}
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -77,21 +82,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwtSettings["Audience"],
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+            ClockSkew = TimeSpan.Zero // importante para evitar delay na expiração do token
         };
     });
 
-
 var app = builder.Build();
 
-// Swagger somente em desenvolvimento
+// Middleware Swagger em desenvolvimento
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Middleware de erro global
+// Middleware global de erro
 app.UseExceptionHandler(exceptionApp =>
 {
     exceptionApp.Run(async context =>
@@ -109,8 +114,11 @@ app.UseExceptionHandler(exceptionApp =>
 });
 
 app.UseHttpsRedirection();
+
+// Autenticação e autorização precisam vir nesta ordem
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 app.Run();

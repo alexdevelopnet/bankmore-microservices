@@ -91,4 +91,19 @@ public class ContaCorrenteRepositorySqlServer : IContaCorrenteRepository
             Salt = ((ContaCorrente)conta).Salt
         });
     }
+
+    public async Task<ContaCorrente?> ObterPorDocumentoOuNumeroAsync(string documentoOuNumero)
+    {
+        const string sql = @"
+        SELECT TOP 1 *
+        FROM contacorrente
+        WHERE cpf = @valor OR numero = @numero";
+
+        return await _connection.QueryFirstOrDefaultAsync<ContaCorrente>(sql, new
+        {
+            valor = documentoOuNumero,
+            numero = int.TryParse(documentoOuNumero, out var numero) ? numero : -1
+        });
+    }
+
 }

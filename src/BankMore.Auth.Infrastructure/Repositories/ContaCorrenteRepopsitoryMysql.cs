@@ -89,5 +89,10 @@ namespace BankMore.Auth.Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public Task<ContaCorrente?> ObterPorDocumentoOuNumeroAsync(string documentoOuNumero)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

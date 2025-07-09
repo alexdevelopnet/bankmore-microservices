@@ -68,7 +68,7 @@ namespace BankMore.Auth.Domain.ValueObjects
 
         public override int GetHashCode() => Numero.GetHashCode();
 
-        // Método estático público para validar CPF (use no handler)
+        
         public static bool ValidarFormato(string cpf)
         {
             if (string.IsNullOrWhiteSpace(cpf))

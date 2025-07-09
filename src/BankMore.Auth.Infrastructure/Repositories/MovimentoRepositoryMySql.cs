@@ -35,9 +35,27 @@ namespace BankMore.Auth.Infrastructure.Repositories
                 Id = movimento.Id.ToString(),
                 IdContaCorrente = movimento.IdContaCorrente.ToString(),
                 DataMovimento = movimento.DataMovimento.ToString("yyyy-MM-dd HH:mm:ss"),
-                Tipo = movimento.Tipo.ToString(),
+                Tipo = movimento.TipoMovimento.ToString(),
                 Valor = movimento.Valor
             });
+        }
+
+        public async Task<decimal> CalcularSaldoAsync(Guid contaId)
+        {
+            const string sql = @"
+                SELECT 
+                    IFNULL(SUM(CASE WHEN tipomovimento = 'C' THEN valor ELSE 0 END), 0) -
+                    IFNULL(SUM(CASE WHEN tipomovimento = 'D' THEN valor ELSE 0 END), 0)
+                FROM movimento
+                WHERE idcontacorrente = @Id";
+
+            return await _connection.ExecuteScalarAsync<decimal>(sql, new { Id = contaId });
+        }
+
+        public Task<bool> ExisteIdempotenciaAsync(string chaveIdempotencia)
+        {
+            var sql = "SELECT COUNT(1) FROM movimento WHERE chave_idempotencia = @ChaveIdempotencia;";  
+            return _connection.ExecuteScalarAsync<bool>(sql, new { ChaveIdempotencia = chaveIdempotencia });
         }
     }
 }

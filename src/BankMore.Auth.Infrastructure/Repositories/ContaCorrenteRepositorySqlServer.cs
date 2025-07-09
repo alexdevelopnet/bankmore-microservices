@@ -74,4 +74,36 @@ public class ContaCorrenteRepositorySqlServer : IContaCorrenteRepository
 
         return await _connection.ExecuteScalarAsync<decimal>(sql, new { id = idConta });
     }
+
+    public Task AtualizarAsync(object conta)
+    {
+       var sql = @"
+            UPDATE contacorrente
+            SET numero = @Numero, nome = @Nome, ativo = @Ativo, senha = @Senha, salt = @Salt
+            WHERE idcontacorrente = @Id";
+        return _connection.ExecuteAsync(sql, new
+        {
+            Id = ((ContaCorrente)conta).Id.ToString(),
+            Numero = ((ContaCorrente)conta).Numero,
+            Nome = ((ContaCorrente)conta).Nome,
+            Ativo = ((ContaCorrente)conta).Ativo ? 1 : 0,
+            Senha = ((ContaCorrente)conta).Senha,
+            Salt = ((ContaCorrente)conta).Salt
+        });
+    }
+
+    public async Task<ContaCorrente?> ObterPorDocumentoOuNumeroAsync(string documentoOuNumero)
+    {
+        const string sql = @"
+        SELECT TOP 1 *
+        FROM contacorrente
+        WHERE cpf = @valor OR numero = @numero";
+
+        return await _connection.QueryFirstOrDefaultAsync<ContaCorrente>(sql, new
+        {
+            valor = documentoOuNumero,
+            numero = int.TryParse(documentoOuNumero, out var numero) ? numero : -1
+        });
+    }
+
 }

@@ -1,7 +1,7 @@
 ﻿using BankMore.Auth.Domain.Abstractions;
 using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
-using MySql.Data.MySqlClient;
 using System.Data;
 
 namespace BankMore.Auth.Infrastructure.Persistence
@@ -19,14 +19,20 @@ namespace BankMore.Auth.Infrastructure.Persistence
         }
 
         public IDbConnection CreateConnection()
-        {
+        { 
             if (_isDocker)
             {
-                return new MySqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+                var connectionString = _configuration.GetConnectionString("DefaultConnection");
+                var connection = new SqliteConnection(connectionString);
+                connection.Open();
+                return connection;
             }
             else
             {
-                return new SqlConnection(_configuration.GetConnectionString("SqlServer"));
+                var connectionString = _configuration.GetConnectionString("SqlServer");
+                var connection = new SqlConnection(connectionString);
+                connection.Open();
+                return connection;
             }
         }
     }

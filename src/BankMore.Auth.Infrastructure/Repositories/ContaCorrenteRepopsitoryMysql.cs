@@ -1,7 +1,7 @@
-﻿using BankMore.Auth.Domain.Repositories;
+﻿using BankMore.Auth.Domain.Entities;
+using BankMore.Auth.Domain.Repositories;
 using Dapper;
 using System.Data;
-using System.Data.Common;
 
 namespace BankMore.Auth.Infrastructure.Repositories
 {
@@ -78,5 +78,20 @@ namespace BankMore.Auth.Infrastructure.Repositories
             return await _connection.ExecuteScalarAsync<decimal>(sql, new { id = idConta });
         }
 
+        public async Task AtualizarAsync(ContaCorrente conta)
+        {
+            var sql = @"UPDATE contacorrente SET ativo = @Ativo WHERE idcontacorrente = @Id";
+            await _connection.ExecuteAsync(sql, new { Id = conta.Id, Ativo = conta.Ativo ? 1 : 0 });
+        }
+
+        public Task AtualizarAsync(object conta)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ContaCorrente?> ObterPorDocumentoOuNumeroAsync(string documentoOuNumero)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -29,5 +29,7 @@ namespace BankMore.Auth.API.Controllers
             var saldo = await _mediator.Send(new ObterSaldoQuery(id));
             return Ok(saldo);
         }
+
+
     }
 }
